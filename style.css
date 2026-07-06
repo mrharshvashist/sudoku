@@ -1,0 +1,72 @@
+:root {
+    --primary-color: #ebf3f5;
+    --secondary-color: #9babba;
+    --highlight-color: #d8e0e7;
+    --hover-color: #c7c6c6;
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    gap: 20px;
+    background-color: #f0f0f0;
+}
+h1 {
+    font-size: 60px;
+}
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    height: fit-content;
+    aspect-ratio: 1/1;
+    border: 3px solid #000;
+    background-color: var(--primary-color);
+}
+
+.sqaure {
+    display: grid;
+    height: 100%;
+    grid-template: repeat(3, 50px)/repeat(3, 50px);
+    border: 1px solid #000;
+}
+.cell {
+    border: 1px solid #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 40px;
+}
+.cell:active {
+    background-color: var(--highlight-color);
+}
+
+.num-container {
+    display: flex;
+    gap: 10px;
+}
+.num-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    
+}
+.num-btn:hover {
+    background-color: var(--hover-color);
+}
+
+.highlight {
+    background-color: var(--highlight-color);
+}
+.active {
+    background-color: var(--secondary-color);
+}
