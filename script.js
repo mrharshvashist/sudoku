@@ -1,3 +1,7 @@
+const board = Array.from(
+  { length: 9 },
+  () => Array(9).fill(0)
+);
 let activeCellId = null;
 
 let setActiveCell = (cellEl) => {
@@ -16,11 +20,19 @@ cells.forEach((cell) => {
         highlightCells(cell);
     });
 });
-document.addEventListener('keypress', (event) => {
+document.addEventListener('keydown', (event) => {
     if (/^[1-9]$/.test(event.key)) {   // Accepts digits 1-9
         const activeCell = document.getElementById(activeCellId);
-        activeCell.textContent = event.key;
-        activeCell.classList.remove('empty');
+        let valid = isValidNum(board, activeCellId, parseInt(event.key));
+        if (valid) {
+          activeCell.textContent = event.key;
+          activeCell.classList.remove('empty');
+          activeCell.classList.remove('invalid');
+        } else {
+          activeCell.textContent = event.key;
+          activeCell.classList.add('invalid');
+          activeCell.classList.remove('empty');
+        }
     }
 });
 document.addEventListener('click', (event) => {
@@ -71,12 +83,8 @@ function highlightCells(cellEl) {// cell-1-2
     });
 }
 
-const board = Array.from(
-  { length: 9 },
-  () => Array(9).fill(0)
-);
+// console.log(board);
 
-fillBoard(board);
 
 console.log(board);
 
@@ -142,7 +150,9 @@ function fillBoard(board) {
   return true;
 }
 
-let unsolvedBoard = removeRandomNums(board);
+fillBoard(board);
+
+
 function removeRandomNums(board) {
   for (let i = 0; i < 40; i++) {
     const row = Math.floor(Math.random() * 9);
@@ -153,6 +163,7 @@ function removeRandomNums(board) {
   }
   return board;
 }
+let unsolvedBoard = removeRandomNums(board);
 
 function fillBoardEl(board) {
   for (let row = 0; row < 9; row++) {
@@ -167,3 +178,28 @@ function fillBoardEl(board) {
 }
 
 fillBoardEl(unsolvedBoard);
+
+function isValidNum(board, activeCellId, num) {
+  const [row, col] = activeCellId.split('-').slice(1).map(Number);
+  // row
+  for (let c = 0; c < 9; c++) {
+    if (board[row][c] === num) return false;
+  }
+
+  // column
+  for (let r = 0; r < 9; r++) {
+    if (board[r][col] === num) return false;
+  }
+
+  // 3x3 box
+  const startRow = Math.floor(row / 3) * 3;
+  const startCol = Math.floor(col / 3) * 3;
+
+  for (let r = startRow; r < startRow + 3; r++) {
+    for (let c = startCol; c < startCol + 3; c++) {
+      if (board[r][c] === num) return false;
+    }
+  }
+
+  return true;
+}

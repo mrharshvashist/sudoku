@@ -1,0 +1,11 @@
+func
+    print 5
+        func
+            print 4
+                func
+                    print 3
+                        func return
+                    print 3
+                print 4
+            print 5
+                            

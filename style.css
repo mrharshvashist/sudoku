@@ -79,3 +79,6 @@ h1 {
 .empty {
     color: transparent;
 }
+.invalid {
+    color: red;
+}
