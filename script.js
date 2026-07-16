@@ -2,91 +2,110 @@ const board = Array.from(
   { length: 9 },
   () => Array(9).fill(0)
 );
+fillBoard(board);
+
+let unsolvedArr = board.map(el => el.slice());
+let unsolvedBoard = removeRandomNums((unsolvedArr));
+
 let activeCellId = null;
 
 let setActiveCell = (cellEl) => {
-    activeCellId = cellEl.id;
-    const allCells = document.querySelectorAll('.cell');
-    allCells.forEach((cell) => {
-        cell.classList.remove('active');
-    });
-    cellEl.classList.add('active');
+  activeCellId = cellEl.id;
+  const allCells = document.querySelectorAll('.cell');
+  allCells.forEach((cell) => {
+    cell.classList.remove('active');
+  });
+  cellEl.classList.add('active');
 }
 
 const cells = document.querySelectorAll('.cell');
 cells.forEach((cell) => {
-    cell.addEventListener('click', () => {
-        setActiveCell(cell);
-        highlightCells(cell);
-    });
+  cell.addEventListener('click', () => {
+    setActiveCell(cell);
+    highlightCells(cell);
+  });
 });
 document.addEventListener('keydown', (event) => {
-    if (/^[1-9]$/.test(event.key)) {   // Accepts digits 1-9
-        const activeCell = document.getElementById(activeCellId);
-        let valid = isValidNum(board, activeCellId, parseInt(event.key));
-        if (valid) {
-          activeCell.textContent = event.key;
-          activeCell.classList.remove('empty');
-          activeCell.classList.remove('invalid');
-        } else {
-          activeCell.textContent = event.key;
-          activeCell.classList.add('invalid');
-          activeCell.classList.remove('empty');
-        }
+  if (/^[1-9]$/.test(event.key)) {   // Accepts digits 1-9
+    const activeCell = document.getElementById(activeCellId);
+    let valid = isValidNum(board, activeCellId, parseInt(event.key));
+    activeCell.textContent = event.key;
+    activeCell.classList.remove('empty');
+    if (valid) {
+      activeCell.classList.remove('invalid');
+      activeCell.classList.add('filled');
+    } else {
+      activeCell.classList.add('invalid');
+      activeCell.classList.remove('filled');
     }
+    const cells = document.querySelectorAll('.cell')
+    cells.forEach(cell => {
+      if (cell.textContent == activeCell.textContent) cell.classList.add('active');
+      else cell.classList.remove('active');
+    })
+  }
 });
 document.addEventListener('click', (event) => {
-    if (!event.target.classList.contains('cell') && !event.target.classList.contains('num-btn')) {
-        activeCellId = null;
-        const allCells = document.querySelectorAll('.cell');
-        allCells.forEach((cell) => {
-            cell.classList.remove('highlight');
-            cell.classList.remove('active');
-        });
-    }
+  if (!event.target.classList.contains('cell') && !event.target.classList.contains('num-btn')) {
+    activeCellId = null;
+    const allCells = document.querySelectorAll('.cell');
+    allCells.forEach((cell) => {
+      cell.classList.remove('highlight');
+      cell.classList.remove('active');
+    });
+  }
 });
 
 document.querySelectorAll('.num-btn').forEach((numberEl) => {
-    numberEl.addEventListener('click', () => {
-        if (activeCellId) {
-            const activeCell = document.getElementById(activeCellId);
-            activeCell.textContent = numberEl.textContent;
-            activeCell.classList.remove('empty');
+  numberEl.addEventListener('click', () => {
+    if (activeCellId) {
+      const [row, col] = activeCellId.split('-').slice(1).map(Number);
+
+      const activeCell = document.getElementById(activeCellId);
+      activeCell.textContent = numberEl.textContent;
+      unsolvedArr[row-1][col-1] = numberEl.textContent;
+      checkWinner();
+      activeCell.classList.remove('empty');
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => {
+        if (cell.textContent == activeCell.textContent) {
+          cell.classList.add('active')
         }
-    })
+      })
+    }
+  })
 });
 
 
 function highlightCells(cellEl) {// cell-1-2
-    const allCells = document.querySelectorAll('.cell');
-    allCells.forEach((cell) => {
-        cell.classList.remove('highlight');
-    });
+  const allCells = document.querySelectorAll('.cell');
+  allCells.forEach((cell) => {
+    cell.classList.remove('highlight');
+  });
 
-    let [_, x, y] = cellEl.id.split('-');
-    for (let j = 1; j <= 9; j++) {
-        const cell = document.getElementById(`cell-${x}-${j}`);
-        if (cell) {
-            cell.classList.add('highlight');
-        }
+  let [_, x, y] = cellEl.id.split('-');
+  for (let j = 1; j <= 9; j++) {
+    const cell = document.getElementById(`cell-${x}-${j}`);
+    if (cell) {
+      cell.classList.add('highlight');
     }
-    for (let j = 1; j <= 9; j++) {
-        const cell = document.getElementById(`cell-${j}-${y}`);
-        if (cell) {
-            cell.classList.add('highlight');
-        }
+  }
+  for (let j = 1; j <= 9; j++) {
+    const cell = document.getElementById(`cell-${j}-${y}`);
+    if (cell) {
+      cell.classList.add('highlight');
     }
-    cellEl.parentElement.querySelectorAll('.cell').forEach((cell) => {
-        if (cell !== cellEl) {
-            cell.classList.add('highlight');
-        }
-    });
+  }
+  cellEl.parentElement.querySelectorAll('.cell').forEach((cell) => {
+    if (cell !== cellEl) {
+      cell.classList.add('highlight');
+    }
+  });
 }
 
 // console.log(board);
 
 
-console.log(board);
 
 function isValid(board, row, col, num) {
   // row
@@ -126,7 +145,7 @@ function fillBoard(board) {
 
       if (board[row][col] === 0) {
 
-        const nums = shuffle([1,2,3,4,5,6,7,8,9]);
+        const nums = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
         for (const num of nums) {
 
@@ -150,7 +169,8 @@ function fillBoard(board) {
   return true;
 }
 
-fillBoard(board);
+console.log(board);
+
 
 
 function removeRandomNums(board) {
@@ -163,7 +183,8 @@ function removeRandomNums(board) {
   }
   return board;
 }
-let unsolvedBoard = removeRandomNums(board);
+
+console.log(unsolvedBoard)
 
 function fillBoardEl(board) {
   for (let row = 0; row < 9; row++) {
@@ -173,33 +194,32 @@ function fillBoardEl(board) {
       if (board[row][col] === 0) {
         cell.classList.add('empty');
       }
+      else {
+        cell.classList.add('disabled')
+      }
     }
   }
 }
 
 fillBoardEl(unsolvedBoard);
 
+
 function isValidNum(board, activeCellId, num) {
   const [row, col] = activeCellId.split('-').slice(1).map(Number);
-  // row
-  for (let c = 0; c < 9; c++) {
-    if (board[row][c] === num) return false;
-  }
+  if (board[row - 1][col-1] === num) return true;
+  return false;
+}
 
-  // column
-  for (let r = 0; r < 9; r++) {
-    if (board[r][col] === num) return false;
-  }
+// TODO: restrict next move if invalid.
+// TODO: check winner
 
-  // 3x3 box
-  const startRow = Math.floor(row / 3) * 3;
-  const startCol = Math.floor(col / 3) * 3;
-
-  for (let r = startRow; r < startRow + 3; r++) {
-    for (let c = startCol; c < startCol + 3; c++) {
-      if (board[r][c] === num) return false;
+function checkWinner() {
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < array.length; j++) {
+      if (board[i][j] == unsolvedArr[i][j]) {
+        
+      }
     }
+    
   }
-
-  return true;
 }
