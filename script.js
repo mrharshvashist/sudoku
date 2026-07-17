@@ -8,10 +8,10 @@ let unsolvedArr = board.map(el => el.slice());
 let unsolvedBoard = removeRandomNums((unsolvedArr));
 
 let activeCellId = null;
-let invalidCellId = null;
+// let invalidCellId = null;
 
 let setActiveCell = (cellEl) => {
-  if (invalidCellId && cellEl.id != invalidCellId) return;
+  // if (invalidCellId && cellEl.id != invalidCellId) return;
 
   activeCellId = cellEl.id;
   const allCells = document.querySelectorAll('.cell');
@@ -26,6 +26,7 @@ cells.forEach((cell) => {
   cell.addEventListener('click', () => {
     setActiveCell(cell);
     highlightCells(cell);
+    console.log(board, unsolvedBoard)
   });
 });
 document.addEventListener('keydown', (event) => {
@@ -35,11 +36,16 @@ document.addEventListener('keydown', (event) => {
     activeCell.textContent = event.key;
     activeCell.classList.remove('empty');
     if (valid) {
+      const [row, col] = activeCellId.split('-').slice(1).map(Number);
+
       activeCell.classList.remove('invalid');
       activeCell.classList.add('filled');
-      inactiveCellId = null;
+      // inactiveCellId = null;
       const cells = document.querySelectorAll('.cell');
       cells.forEach(cell => cell.classList.remove('disabled'))
+      unsolvedBoard[row - 1][col - 1] = event.key;
+      checkSolved();
+
     } else {
       activeCell.classList.add('invalid');
       activeCell.classList.remove('filled');
@@ -47,7 +53,7 @@ document.addEventListener('keydown', (event) => {
       cells.forEach(cell => {
         cell.id != activeCellId && cell.classList.add('disabled')
       });
-      invalidCellId = activeCellId;
+      // invalidCellId = activeCellId;
     }
     const cells = document.querySelectorAll('.cell')
     cells.forEach(cell => {
@@ -75,10 +81,10 @@ document.querySelectorAll('.num-btn').forEach((numberEl) => {
 
       const activeCell = document.getElementById(activeCellId);
       activeCell.textContent = numberEl.textContent;
-      unsolvedArr[row - 1][col - 1] = numberEl.textContent;
+      unsolvedBoard[row - 1][col - 1] = numberEl.textContent;
       checkSolved();
       activeCell.classList.remove('empty');
-      
+
       let valid = isValidNum(board, activeCellId, numberEl.textContent);
 
       if (valid) {
@@ -245,15 +251,15 @@ function isValidNum(board, activeCellId, num) {
 }
 
 // TODO: highlight all same num. DONE
-// TODO: restrict next move if invalid.
+// TODO: restrict next move if invalid.  DONE
 // TODO: check winner. INCOMPLETE
-// TODO: tell which number is done
+// TODO: tell which number is done INCOMPLETE
 
 function checkSolved() {
   let solved = true;
   for (let i = 0; i < board.length; i++) {
     for (let j = 0; j < board.length; j++) {
-      if (board[i][j] !== unsolvedArr[i][j]) {
+      if (board[i][j] != unsolvedBoard[i][j]) {
         solved = false;
         break
       }
@@ -262,7 +268,7 @@ function checkSolved() {
   const boardEl = document.getElementById('board')
   if (solved) {
     boardEl.style.pointerEvents = 'none'
-    alert("fuck you")
+    alert("sudoku solved")
   }
 
 }
