@@ -8,8 +8,11 @@ let unsolvedArr = board.map(el => el.slice());
 let unsolvedBoard = removeRandomNums((unsolvedArr));
 
 let activeCellId = null;
+let invalidCellId = null;
 
 let setActiveCell = (cellEl) => {
+  if (invalidCellId && cellEl.id != invalidCellId) return;
+
   activeCellId = cellEl.id;
   const allCells = document.querySelectorAll('.cell');
   allCells.forEach((cell) => {
@@ -34,9 +37,17 @@ document.addEventListener('keydown', (event) => {
     if (valid) {
       activeCell.classList.remove('invalid');
       activeCell.classList.add('filled');
+      inactiveCellId = null;
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => cell.classList.remove('disabled'))
     } else {
       activeCell.classList.add('invalid');
       activeCell.classList.remove('filled');
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => {
+        cell.id != activeCellId && cell.classList.add('disabled')
+      });
+      invalidCellId = activeCellId;
     }
     const cells = document.querySelectorAll('.cell')
     cells.forEach(cell => {
@@ -59,15 +70,38 @@ document.addEventListener('click', (event) => {
 document.querySelectorAll('.num-btn').forEach((numberEl) => {
   numberEl.addEventListener('click', () => {
     if (activeCellId) {
+      console.log(activeCellId)
       const [row, col] = activeCellId.split('-').slice(1).map(Number);
 
       const activeCell = document.getElementById(activeCellId);
       activeCell.textContent = numberEl.textContent;
-      unsolvedArr[row-1][col-1] = numberEl.textContent;
-      checkWinner();
+      unsolvedArr[row - 1][col - 1] = numberEl.textContent;
+      checkSolved();
       activeCell.classList.remove('empty');
-      const cells = document.querySelectorAll('.cell');
+      
+      let valid = isValidNum(board, activeCellId, numberEl.textContent);
+
+      if (valid) {
+        activeCell.classList.remove('invalid');
+        activeCell.classList.add('filled');
+        invalidCellId = null;
+      } else {
+        activeCell.classList.add('invalid');
+        activeCell.classList.remove('filled');
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => {
+          cell.classList.remove('diabled');
+          cell.id != activeCellId && cell.classList.add('disabled') && console.log(cell.id, cell.classList)
+        });
+
+
+      }
+
+
+
+
       cells.forEach(cell => {
+        cell.classList.remove('active')
         if (cell.textContent == activeCell.textContent) {
           cell.classList.add('active')
         }
@@ -206,20 +240,29 @@ fillBoardEl(unsolvedBoard);
 
 function isValidNum(board, activeCellId, num) {
   const [row, col] = activeCellId.split('-').slice(1).map(Number);
-  if (board[row - 1][col-1] === num) return true;
+  if (board[row - 1][col - 1] === num) return true;
   return false;
 }
 
+// TODO: highlight all same num. DONE
 // TODO: restrict next move if invalid.
-// TODO: check winner
+// TODO: check winner. INCOMPLETE
+// TODO: tell which number is done
 
-function checkWinner() {
+function checkSolved() {
+  let solved = true;
   for (let i = 0; i < board.length; i++) {
-    for (let j = 0; j < array.length; j++) {
-      if (board[i][j] == unsolvedArr[i][j]) {
-        
+    for (let j = 0; j < board.length; j++) {
+      if (board[i][j] !== unsolvedArr[i][j]) {
+        solved = false;
+        break
       }
     }
-    
   }
+  const boardEl = document.getElementById('board')
+  if (solved) {
+    boardEl.style.pointerEvents = 'none'
+    alert("fuck you")
+  }
+
 }

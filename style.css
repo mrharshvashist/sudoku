@@ -24,7 +24,7 @@ body {
 h1 {
     font-size: 60px;
 }
-.board {
+#board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     height: fit-content;
