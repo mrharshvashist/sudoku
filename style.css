@@ -26,6 +26,7 @@ h1 {
 }
 #board {
     display: grid;
+    width: min(100vw, 600px);
     grid-template-columns: repeat(3, 1fr);
     height: fit-content;
     aspect-ratio: 1/1;
@@ -37,7 +38,7 @@ h1 {
 .sqaure {
     display: grid;
     height: 100%;
-    grid-template: repeat(3, 50px)/repeat(3, 50px);
+    grid-template: repeat(3, 1fr)/repeat(3, 1fr);
     /* border: 1px solid #000; */
     gap: 1px;
 }
@@ -58,11 +59,15 @@ h1 {
 
 .num-container {
     display: flex;
-    gap: 10px;
+    width: min(600px,100%);
+    justify-content: center;
+
+    flex-wrap: wrap;
+    /* gap: 10px; */
 }
 .num-btn {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     font-size: 20px;
     cursor: pointer;
     
