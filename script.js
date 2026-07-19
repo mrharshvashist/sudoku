@@ -6,6 +6,9 @@ fillBoard(board);
 
 let unsolvedArr = board.map(el => el.slice());
 let unsolvedBoard = removeRandomNums((unsolvedArr));
+const cells = document.querySelectorAll('.cell');
+let sound = document.getElementById('sound')
+
 
 let activeCellId = null;
 // let invalidCellId = null;
@@ -14,19 +17,19 @@ let setActiveCell = (cellEl) => {
   // if (invalidCellId && cellEl.id != invalidCellId) return;
 
   activeCellId = cellEl.id;
-  const allCells = document.querySelectorAll('.cell');
-  allCells.forEach((cell) => {
+  cells.forEach((cell) => {
     cell.classList.remove('active');
   });
   cellEl.classList.add('active');
 }
 
-const cells = document.querySelectorAll('.cell');
 cells.forEach((cell) => {
   cell.addEventListener('click', () => {
+    if (cell.classList.contains('fixed')) return;
     setActiveCell(cell);
     highlightCells(cell);
     console.log(board, unsolvedBoard)
+    sound.play();
   });
 });
 document.addEventListener('keydown', (event) => {
@@ -35,13 +38,13 @@ document.addEventListener('keydown', (event) => {
     let valid = isValidNum(board, activeCellId, parseInt(event.key));
     activeCell.textContent = event.key;
     activeCell.classList.remove('empty');
+    sound.play()
     if (valid) {
+      playAnimation()
       const [row, col] = activeCellId.split('-').slice(1).map(Number);
-
       activeCell.classList.remove('invalid');
       activeCell.classList.add('filled');
       // inactiveCellId = null;
-      const cells = document.querySelectorAll('.cell');
       cells.forEach(cell => cell.classList.remove('disabled'))
       unsolvedBoard[row - 1][col - 1] = event.key;
       checkSolved();
@@ -49,13 +52,11 @@ document.addEventListener('keydown', (event) => {
     } else {
       activeCell.classList.add('invalid');
       activeCell.classList.remove('filled');
-      const cells = document.querySelectorAll('.cell');
       cells.forEach(cell => {
         cell.id != activeCellId && cell.classList.add('disabled')
       });
       // invalidCellId = activeCellId;
     }
-    const cells = document.querySelectorAll('.cell')
     cells.forEach(cell => {
       if (cell.textContent == activeCell.textContent) cell.classList.add('active');
       else cell.classList.remove('active');
@@ -65,8 +66,7 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('click', (event) => {
   if (!event.target.classList.contains('cell') && !event.target.classList.contains('num-btn')) {
     activeCellId = null;
-    const allCells = document.querySelectorAll('.cell');
-    allCells.forEach((cell) => {
+    cells.forEach((cell) => {
       cell.classList.remove('highlight');
       cell.classList.remove('active');
     });
@@ -76,7 +76,7 @@ document.addEventListener('click', (event) => {
 document.querySelectorAll('.num-btn').forEach((numberEl) => {
   numberEl.addEventListener('click', () => {
     if (activeCellId) {
-      console.log(activeCellId)
+      // console.log(activeCellId)
       const [row, col] = activeCellId.split('-').slice(1).map(Number);
 
       const activeCell = document.getElementById(activeCellId);
@@ -87,17 +87,19 @@ document.querySelectorAll('.num-btn').forEach((numberEl) => {
 
       let valid = isValidNum(board, activeCellId, numberEl.textContent);
 
+      sound.play()
       if (valid) {
+        playAnimation()
         activeCell.classList.remove('invalid');
         activeCell.classList.add('filled');
         invalidCellId = null;
+        cells.forEach(cell => cell.classList.remove('disabled'));
       } else {
         activeCell.classList.add('invalid');
         activeCell.classList.remove('filled');
-        const cells = document.querySelectorAll('.cell');
         cells.forEach(cell => {
           cell.classList.remove('diabled');
-          cell.id != activeCellId && cell.classList.add('disabled') && console.log(cell.id, cell.classList)
+          cell.id != activeCellId && cell.classList.add('disabled');
         });
 
 
@@ -118,8 +120,7 @@ document.querySelectorAll('.num-btn').forEach((numberEl) => {
 
 
 function highlightCells(cellEl) {// cell-1-2
-  const allCells = document.querySelectorAll('.cell');
-  allCells.forEach((cell) => {
+  cells.forEach((cell) => {
     cell.classList.remove('highlight');
   });
 
@@ -141,6 +142,30 @@ function highlightCells(cellEl) {// cell-1-2
       cell.classList.add('highlight');
     }
   });
+}
+
+function playAnimation() {
+  cells.forEach((cell) => {
+    cell.classList.remove('animate');
+  });
+
+  if (!activeCellId) return false;
+
+  const [, rowStr, colStr] = activeCellId.split('-');
+  const row = Number(rowStr);
+  const col = Number(colStr);
+
+  let hasAnimatedCell = false;
+
+  for (let j = 0; j < 9; j++) {
+    const cell = document.getElementById(`cell-${row}-${j + 1}`);
+    if (cell && unsolvedBoard[row - 1][j] !== 0 && unsolvedBoard[row - 1][j] === board[row - 1][j]) {
+      cell.classList.add('animate');
+      hasAnimatedCell = true;
+    }
+  }
+
+  return hasAnimatedCell;
 }
 
 // console.log(board);
@@ -209,7 +234,7 @@ function fillBoard(board) {
   return true;
 }
 
-console.log(board);
+// console.log(board);
 
 
 
@@ -224,7 +249,7 @@ function removeRandomNums(board) {
   return board;
 }
 
-console.log(unsolvedBoard)
+// console.log(unsolvedBoard)
 
 function fillBoardEl(board) {
   for (let row = 0; row < 9; row++) {
@@ -232,10 +257,11 @@ function fillBoardEl(board) {
       const cell = document.getElementById(`cell-${row + 1}-${col + 1}`);
       cell.textContent = board[row][col];
       if (board[row][col] === 0) {
-        cell.classList.add('empty');
+        cell.classList.add('empty', 'animate');
+        
       }
       else {
-        cell.classList.add('disabled')
+        cell.classList.add('fixed')
       }
     }
   }
@@ -246,7 +272,7 @@ fillBoardEl(unsolvedBoard);
 
 function isValidNum(board, activeCellId, num) {
   const [row, col] = activeCellId.split('-').slice(1).map(Number);
-  if (board[row - 1][col - 1] === num) return true;
+  if (board[row - 1][col - 1] == num) return true;
   return false;
 }
 
@@ -254,6 +280,7 @@ function isValidNum(board, activeCellId, num) {
 // TODO: restrict next move if invalid.  DONE
 // TODO: check winner. INCOMPLETE
 // TODO: tell which number is done INCOMPLETE
+// TODO: col,row and box completion animation
 
 function checkSolved() {
   let solved = true;
@@ -272,3 +299,4 @@ function checkSolved() {
   }
 
 }
+

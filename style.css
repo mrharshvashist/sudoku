@@ -2,7 +2,7 @@
     --primary-color: #dbebee;
     --secondary-color: #93b3ab;
     --highlight-color: #bed1d6;
-    --hover-color: #c7c6c6;
+    --hover-color: #8b9b98;
 }
 * {
     box-sizing: border-box;
@@ -14,11 +14,11 @@
 }
 body {
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
-    height: 100vh;
+    /* height: 100vh; */
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
     background-color: #f0f0f0;
 }
 h1 {
@@ -26,12 +26,12 @@ h1 {
 }
 #board {
     display: grid;
-    width: min(100vw, 600px);
+    width: min(100vw, 500px);
     grid-template-columns: repeat(3, 1fr);
-    height: fit-content;
+    /* height: ; */
     aspect-ratio: 1/1;
     border: 3px solid #000;
-    background-color: #444;
+    background-color: #000000;
     gap: 3px;
 }
 
@@ -48,32 +48,43 @@ h1 {
     justify-content: center;
     align-items: center;
     height: 100%;
-    font-size: 35px;
+    font-size: min(40px, 9vw);
 
-    background-color: var(--primary-color);
+    background: var(--primary-color);
     cursor: pointer;
 }
 .cell:active {
     background-color: var(--highlight-color);
+}
+.cell:hover {
+    background-color: #bccfc8;
 }
 
 .num-container {
     display: flex;
     width: min(600px,100%);
     justify-content: center;
-
-    flex-wrap: wrap;
-    /* gap: 10px; */
+    padding: 0px 10px;
+    /* flex-wrap: wrap; */
+    gap: min(5px, 1vw);
 }
 .num-btn {
     width: 45px;
     height: 45px;
-    font-size: 20px;
+    border: 2px solid;
+    background-color: #b5cbc7;
+    border-radius: 5px;
+    font-size: min(32px, 9vw);
     cursor: pointer;
     
 }
 .num-btn:hover {
     background-color: var(--hover-color);
+    /* border: none; */
+}
+.num-btn:active{
+        background-color: grey;
+
 }
 
 .highlight {
@@ -94,4 +105,16 @@ h1 {
 }
 .filled {
     color: #005656;
+}
+
+.animate {
+    animation: animate 1s linear 0s 1;
+}
+@keyframes animate {
+    0%, 100% {
+        background: var(--primary-color);
+    }
+    50% {
+        background: turquoise;
+    }
 }
