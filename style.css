@@ -27,12 +27,18 @@ h1 {
 #board {
     display: grid;
     width: min(100vw, 500px);
+    justify-content: center;
+    align-items: center;
     grid-template-columns: repeat(3, 1fr);
     /* height: ; */
     aspect-ratio: 1/1;
     border: 3px solid #000;
     background-color: #000000;
     gap: 3px;
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    margin: 0 5px;
 }
 
 .sqaure {
@@ -117,4 +123,15 @@ h1 {
     50% {
         background: turquoise;
     }
+}
+
+#win-message {
+    background: linear-gradient(-90deg, transparent, cyan, cyan, transparent);
+    width: 0%;
+    overflow: hidden;
+    position: absolute;
+    text-align: center;
+    height: 50px;
+    font-size: 45px;
+    transition: width 300ms;
 }

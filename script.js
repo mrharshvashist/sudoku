@@ -168,7 +168,7 @@ function playAnimation() {
   return hasAnimatedCell;
 }
 
-// console.log(board);
+console.log(board);
 
 
 
@@ -292,11 +292,16 @@ function checkSolved() {
       }
     }
   }
-  const boardEl = document.getElementById('board')
+  const boardEl = document.getElementById('board');
+  const winMessage = document.getElementById('win-message');
   if (solved) {
     boardEl.style.pointerEvents = 'none'
-    alert("sudoku solved")
+    winMessage.style.width = '100%'
   }
+  // else{
+  //   winMessage.style.width = '0%';
+
+  // }
 
 }
 
