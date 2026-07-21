@@ -7,7 +7,8 @@ fillBoard(board);
 let unsolvedArr = board.map(el => el.slice());
 let unsolvedBoard = removeRandomNums((unsolvedArr));
 const cells = document.querySelectorAll('.cell');
-let sound = document.getElementById('sound')
+let sound = document.getElementById('sound');
+const numBtns = document.querySelectorAll('.num-btn');
 
 
 let activeCellId = null;
@@ -47,6 +48,7 @@ document.addEventListener('keydown', (event) => {
       // inactiveCellId = null;
       cells.forEach(cell => cell.classList.remove('disabled'))
       unsolvedBoard[row - 1][col - 1] = event.key;
+      checkDoneNum(+event.key)
       checkSolved();
 
     } else {
@@ -90,6 +92,7 @@ document.querySelectorAll('.num-btn').forEach((numberEl) => {
       sound.play()
       if (valid) {
         playAnimation()
+        checkDoneNum(+numberEl.textContent)
         activeCell.classList.remove('invalid');
         activeCell.classList.add('filled');
         invalidCellId = null;
@@ -305,3 +308,19 @@ function checkSolved() {
 
 }
 
+function checkDoneNum(num) {
+  let flatArr = unsolvedBoard.slice().flat()
+  let count = 0
+  flatArr.forEach(el => {
+    if (el == num) {
+      count++
+      console.log(count)
+    }
+  })
+  if (count == 9) {
+    let btn = document.getElementById(`num-btn-${num}`);
+    btn.textContent = '✔'
+    btn.disabled = true;
+
+  }
+}
